@@ -1,118 +1,122 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
-const AddVisitorForm = ({ onAdd }) => {
+const AddVisitorForm = () => {
   const [residents, setResidents] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
-    purpose: "",
-    residentId: "",
-  });
-  const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [purpose, setPurpose] = useState("");
+  const [residentId, setResidentId] = useState("");
 
   useEffect(() => {
-    const fetchResidents = async () => {
-      try {
-        const res = await axios.get("/api/users/residents", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        console.log(res.data); // Log the response to check its structure
-        if (Array.isArray(res.data)) {
-          setResidents(res.data);
-        } else {
-          setResidents([]); // Reset to empty if the response isn't an array
-        }
-      } catch (err) {
-        console.error("Failed to fetch residents", err);
-        setResidents([]);
-      }
-    };
-    
-
     fetchResidents();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const fetchResidents = async () => {
     try {
-      await axios.post("/api/visitors/add", formData, {
+      const response = await axios.get("/api/auth/users/residents", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setMessage("Visitor added successfully!");
-      setFormData({ name: "", phone: "", purpose: "", residentId: "" });
 
-      // ✅ Call onAdd to refresh the visitor logs
-      if (onAdd) onAdd();
-    } catch (err) {
-      setMessage("Error adding visitor.");
-      console.error(err);
+      if (Array.isArray(response.data)) {
+        setResidents(response.data);
+      } else {
+        console.error("Residents API did not return an array:", response.data);
+        setResidents([]);
+      }
+    } catch (error) {
+      console.error("Error fetching residents:", error);
+      setResidents([]);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://localhost:5000/api/visitor/add", {
+        name,
+        phone,
+        purpose,
+        residentId,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      
+
+      alert("Visitor Added Successfully");
+      setName("");
+      setPhone("");
+      setPurpose("");
+      setResidentId("");
+    } catch (error) {
+      console.error("Error adding visitor:", error);
     }
   };
 
   return (
-    <div className="mt-4">
-      <h4>Add Visitor</h4>
-      {message && <p className="text-info">{message}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label>Visitor Name</label>
-          <input
-            className="form-control"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label>Phone</label>
-          <input
-            className="form-control"
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label>Purpose</label>
-          <input
-            className="form-control"
-            value={formData.purpose}
-            onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label>Select Resident</label>
-          <select
-            className="form-select"
-            value={formData.residentId}
-            onChange={(e) => setFormData({ ...formData, residentId: e.target.value })}
-            required
-          >
-            <option value="">-- Select --</option>
-            {residents.map((res) => {
-  if (!res._id || !res.name || !res.email) return null; // Skip invalid data
+    <form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm">
+      <h2 className="mb-4">Add Visitor</h2>
 
-  return (
-    <option key={res._id} value={res._id}>
-      {res.name} ({res.email})
-    </option>
-  );
-})}
+      <div className="mb-3">
+        <label htmlFor="name" className="form-label">Name:</label>
+        <input
+          id="name"
+          type="text"
+          className="form-control"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+      </div>
 
+      <div className="mb-3">
+        <label htmlFor="phone" className="form-label">Phone:</label>
+        <input
+          id="phone"
+          type="text"
+          className="form-control"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+        />
+      </div>
 
-          </select>
-        </div>
-        <button className="btn btn-primary" type="submit">
-          Add Visitor
-        </button>
-      </form>
-    </div>
+      <div className="mb-3">
+        <label htmlFor="purpose" className="form-label">Purpose:</label>
+        <input
+          id="purpose"
+          type="text"
+          className="form-control"
+          value={purpose}
+          onChange={(e) => setPurpose(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="mb-3">
+        <label htmlFor="residentId" className="form-label">Resident:</label>
+        <select
+          id="residentId"
+          className="form-select"
+          value={residentId}
+          onChange={(e) => setResidentId(e.target.value)}
+          required
+        >
+          <option value="">Select Resident</option>
+          {residents.map((resident) => (
+            <option key={resident._id} value={resident._id}>
+              {resident.name} ({resident.email})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button type="submit" className="btn btn-primary w-100">Add Visitor</button>
+    </form>
   );
 };
 

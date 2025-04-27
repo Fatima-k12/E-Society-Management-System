@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DashboardCard from "./DashboardCard";
 import AddVisitorForm from "./AddVisitorForm";
-import axios from "axios";
+import VisitorLogs from "./VisitorLogs";
 
 const SecurityDashboard = () => {
   const [activeSection, setActiveSection] = useState("");
@@ -18,8 +18,8 @@ const SecurityDashboard = () => {
   // Fetch visitor logs when section is active
   const fetchVisitors = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/visitors'); // ✅ Make sure this is the correct backend route
-      const data = await res.json(); // ❌ This will fail if `res` is not JSON
+      const res = await fetch('http://localhost:5000/api/visitor'); 
+      const data = await res.json(); 
       console.log('Fetched visitors:', data);
       setVisitors(data);
     } catch (err) {
@@ -53,36 +53,8 @@ const SecurityDashboard = () => {
       {activeSection === "visitor" && (
         <div>
           <AddVisitorForm onAdd={fetchVisitors} />
-
-          <div className="mt-5">
-            <h4>Visitor Logs</h4>
-            {visitors.length === 0 ? (
-              <p>No visitors found.</p>
-            ) : (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Visitor</th>
-                    <th>Phone</th>
-                    <th>Purpose</th>
-                    <th>Resident</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visitors.map((v) => (
-                    <tr key={v._id}>
-                      <td>{v.name}</td>
-                      <td>{v.phone}</td>
-                      <td>{v.purpose}</td>
-                      <td>{v.resident?.name || "N/A"}</td>
-                      <td>{v.status}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+          <VisitorLogs role="security"/>
+        
         </div>
       )}
     </div>

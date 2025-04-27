@@ -3,8 +3,9 @@ import axios from "axios";
 import DashboardCard from "./DashboardCard";
 import ResidentComplaints from "./ResidentComplaints";
 import ResidentBooking from "./ResidentBooking";
+import ResidentVisitorApproval from "./ResidentVisitorApproval";
 
-const ResidentDashboard = () => {
+function ResidentDashboard() {
     const [visitors, setVisitors] = useState([]);
     const [showVisitors, setShowVisitors] = useState(false);
     const [showComplaints, setShowComplaints] = useState(false);
@@ -88,35 +89,9 @@ const ResidentDashboard = () => {
             {/* ✅ Sections Show Only When Clicked */}
             {showBookings && <ResidentBooking />}
             {showComplaints && <ResidentComplaints />}
-
-
-            {/* ✅ Pending Visitors List */}
-            {showVisitors && (
-                <div className="mt-4 mb-5">
-                    <h3>Pending Visitor Requests</h3>
-                    {visitors.length === 0 ? (
-                        <p>No pending requests</p>
-                    ) : (
-                        <ul className="list-group mb-5">
-                            {visitors.map((visitor) => (
-                                <li key={visitor._id} className="list-group-item d-flex justify-content-between align-items-center">
-                                    {visitor.name} - {visitor.purpose}
-                                    <div>
-                                        <button className="btn btn-success btn-sm me-2" onClick={() => handleApproval(visitor._id, "Approved")}>
-                                            Approve
-                                        </button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => handleApproval(visitor._id, "Rejected")}>
-                                            Reject
-                                        </button>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            )}
+            {showVisitors && <ResidentVisitorApproval />}
         </div>
     );
-};
+}
 
 export default ResidentDashboard;

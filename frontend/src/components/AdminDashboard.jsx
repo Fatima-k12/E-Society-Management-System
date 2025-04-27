@@ -3,6 +3,7 @@ import axios from "axios";
 import DashboardCard from "./DashboardCard"; // Import the reusable DashboardCard component
 import { Link } from "react-router-dom";
 import { FaUserPlus } from "react-icons/fa"; // Icon for the sign-up button
+import VisitorLogs from "./VisitorLogs";
 
 const AdminDashboard = () => {
   const [bookings, setBookings] = useState([]);
@@ -45,7 +46,7 @@ const AdminDashboard = () => {
   const fetchVisitors = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await axios.get("http://localhost:5000/api/visitors/all", {
+      const res = await axios.get("http://localhost:5000/api/visitor/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setVisitors(res.data);
@@ -177,29 +178,7 @@ const AdminDashboard = () => {
       )}
 
       {/* Visitor Logs Section */}
-      {showVisitors && (
-        <div className="mt-4">
-          <h3>Visitor Logs</h3>
-          {visitors.length === 0 ? (
-            <p>No visitor logs found.</p>
-          ) : (
-            <ul className="list-group">
-              {visitors.map((visitor) => (
-                <li key={visitor._id} className="list-group-item">
-                  <strong>{visitor.name}</strong> - {visitor.purpose}
-                  <span
-                    className={`badge bg-${
-                      visitor.status === "Approved" ? "success" : "warning"
-                    } float-end`}
-                  >
-                    {visitor.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
+      {showVisitors && <VisitorLogs /> }
     </div>
   );
 };

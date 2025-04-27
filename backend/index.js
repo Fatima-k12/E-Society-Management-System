@@ -23,7 +23,7 @@ const protectedRoutes = require("./routes/protectedRoutes");
 app.use("/api/protected", protectedRoutes);
 
 const visitorRoutes = require("./routes/visitorRoutes");
-app.use("/api/visitors", visitorRoutes);
+app.use("/api/visitor", visitorRoutes);
 
 const complaintRoutes = require("./routes/complaintRoutes");
 app.use("/api/complaints", complaintRoutes);
